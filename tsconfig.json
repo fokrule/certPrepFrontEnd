@@ -17,6 +17,11 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
+    "baseUrl": "./",                      // ← REQUIRED! Tells TS where to start resolving paths from
+    "paths": {
+      "@models/*": ["src/app/models/*"], 
+      "@services/*": ["src/app/services/*"]
+    },
     "useDefineForClassFields": false,
     "lib": [
       "ES2022",

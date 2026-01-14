@@ -1,1 +1,50 @@
-<p>test-take works!</p>
+<div class="test-container" *ngIf="test">
+  <header class="test-header">
+    <h1>{{ test.title }}</h1>
+    <div class="test-meta">
+      <span><mat-icon>timer</mat-icon> Time left: {{ formatTime() }}</span>
+      <span><mat-icon>quiz</mat-icon> Question {{ currentQuestionIndex + 1 }} of {{ test.questions.length }}</span>
+    </div>
+  </header>
+
+  <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+
+  <mat-card class="question-card" *ngIf="currentQuestion as q">
+    <mat-card-content>
+      <h2 class="question-text">{{ q.text }}</h2>
+
+      <mat-radio-group 
+        [(ngModel)]="answers[currentQuestionIndex].selectedOptionId"
+        (change)="selectOption(q.id, $event.value)">
+        <mat-radio-button *ngFor="let opt of q.options" [value]="opt.id">
+          {{ opt.text }}
+        </mat-radio-button>
+      </mat-radio-group>
+    </mat-card-content>
+
+    <mat-card-actions class="navigation">
+      <button mat-raised-button 
+              [disabled]="currentQuestionIndex === 0" 
+              (click)="previous()">
+        Previous
+      </button>
+
+      <button mat-raised-button color="accent" 
+              (click)="submitTest()" 
+              [disabled]="isSubmitting">
+        Submit Test
+      </button>
+
+      <button mat-raised-button color="primary" 
+              [disabled]="currentQuestionIndex === test.questions.length - 1" 
+              (click)="next()">
+        Next
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+<div *ngIf="!test" class="loading">
+  <mat-spinner></mat-spinner>
+  <p>Loading test...</p>
+</div>

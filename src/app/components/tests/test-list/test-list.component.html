@@ -1,1 +1,52 @@
-<p>test-list works!</p>
+<div class="container">
+  <h1 class="page-title">Practice Tests</h1>
+  
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Search by certificate or keyword</mat-label>
+    <input matInput [(ngModel)]="searchTerm" 
+           (keyup.enter)="onSearch()" 
+           placeholder="e.g. AWS Developer, Security+, Kubernetes">
+    <button mat-icon-button matSuffix (click)="onSearch()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+
+  @if (tests.length === 0) {
+    <div class="no-results">
+      <mat-icon class="empty-icon">search_off</mat-icon>
+      <p>No tests found matching your search</p>
+      <button mat-stroked-button (click)="searchTerm = ''; loadTests()">
+        Clear Search
+      </button>
+    </div>
+  } @else {
+    <div class="test-grid">
+      @for (test of tests; track test.id) {
+        <mat-card class="test-card">
+          <mat-card-header>
+            <mat-card-title>{{ test.title }}</mat-card-title>
+            <mat-card-subtitle>{{ test.certificate }}</mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <p class="description">{{ test.description }}</p>
+            
+            <div class="test-info">
+              <span><mat-icon>quiz</mat-icon> {{ test.questionsCount }} questions</span>
+              <span><mat-icon>timer</mat-icon> {{ test.durationMinutes }} min</span>
+              <span [class]="test.difficulty.toLowerCase()">
+                <mat-icon>signal_cellular_alt</mat-icon> {{ test.difficulty }}
+              </span>
+            </div>
+          </mat-card-content>
+          
+          <mat-card-actions>
+            <button mat-raised-button color="primary" [routerLink]="['/test', test.id]">
+              Start Test
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

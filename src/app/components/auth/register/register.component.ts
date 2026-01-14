@@ -43,13 +43,17 @@ import { AuthService } from '../../../services/auth.service';
               <input matInput [(ngModel)]="credentials.password" name="password" type="password" required>
             </mat-form-field>
 
-            <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+            @if (errorMessage) {
+              <div class="error">{{ errorMessage }}</div>
+            }
 
             <button mat-raised-button color="primary" type="submit" 
                     [disabled]="registerForm.invalid || isLoading"
                     class="full-width submit-btn">
-              <span *ngIf="!isLoading">Create Account</span>
-              <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+              @if (!isLoading) { Create Account }
+              @if (isLoading) {
+                <mat-spinner diameter="24"></mat-spinner>
+              }
             </button>
           </form>
 

@@ -20,9 +20,15 @@ export class AuthService {
   }
 
   register(name: string, email: string, password: string): boolean {
-    // Fake register
-    return this.login(email, password);
+  // Fake success - later replace with real API call
+  if (name && email && password) {
+    // In real app you would send to backend
+    this.fakeToken = 'fake-jwt-token-' + Date.now();
+    localStorage.setItem('token', this.fakeToken);
+    return true;
   }
+  return false;
+}
 
   logout(): void {
     this.fakeToken = null;

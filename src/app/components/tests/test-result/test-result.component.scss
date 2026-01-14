@@ -1,0 +1,87 @@
+.result-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+.result-card {
+  padding: 16px;
+}
+
+.score-section {
+  text-align: center;
+  margin-bottom: 40px;
+
+  .score {
+    font-size: 4.5rem;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .score-detail {
+    font-size: 1.5rem;
+    color: #555;
+  }
+
+  .message {
+    font-size: 1.8rem;
+    margin-top: 16px;
+  }
+
+  .success { color: #4caf50; }
+  .fail { color: #f44336; }
+}
+
+.questions-list {
+  margin-top: 24px;
+}
+
+.question-item {
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+
+  &.correct {
+    background-color: #e8f5e9;
+    border-color: #4caf50;
+  }
+
+  &.incorrect {
+    background-color: #ffebee;
+    border-color: #f44336;
+  }
+
+  .question-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    mat-icon {
+      font-size: 28px;
+      height: 28px;
+      width: 28px;
+    }
+
+    .question-text {
+      font-weight: 500;
+    }
+  }
+
+  .answer-info p {
+    margin: 8px 0;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.loading {
+  text-align: center;
+  margin-top: 100px;
+}
