@@ -10,8 +10,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';  
 import { ActivatedRoute, Router } from '@angular/router';
 import { interval, Subscription, takeWhile } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TestService } from '../../../services/test.service';
+import { TestService } from '@services/test.service';
 import { PracticeTest, Question, Answer } from '@models/test.models';
+import { HistoryService } from '@services/history.service';
 
 @Component({
   selector: 'app-test-take',
@@ -42,7 +43,7 @@ export class TestTakeComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private testService = inject(TestService);
-
+  private historyService = inject(HistoryService);
   get currentQuestion(): Question | undefined {
     return this.test?.questions[this.currentQuestionIndex];
   }
@@ -117,9 +118,11 @@ export class TestTakeComponent implements OnInit, OnDestroy {
 
     this.testService.submitAnswers(this.test.id, this.answers).subscribe({
       next: (result) => {
-        // Navigate with result data (simple way: use query params or state)
+        // Save to history
+        this.historyService.addAttempt(result);
+
         this.router.navigate(['/result', this.test?.id], {
-          state: { result }  // ← pass result via navigation state
+          state: { result }
         });
       },
       error: (err) => {

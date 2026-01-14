@@ -7,6 +7,7 @@ import { TestTakeComponent } from './components/tests/test-take/test-take.compon
 import { TestResultComponent } from './components/tests/test-result/test-result.component';
 
 import { authGuard } from './guards/auth.guard';
+import { ProfileComponent } from './components/profile/profile.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/tests', pathMatch: 'full' },
@@ -20,6 +21,8 @@ export const routes: Routes = [
   // Protected routes - need to be logged in
   { path: 'test/:id', component: TestTakeComponent, canActivate: [authGuard] },
   { path: 'result/:id', component: TestResultComponent, canActivate: [authGuard] },
+  
+  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   
   // Fallback
   { path: '**', redirectTo: '/tests' }

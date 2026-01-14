@@ -4,6 +4,7 @@
   <span class="spacer"></span>
   
   <ng-container *ngIf="isLoggedIn; else notLogged">
+    <button mat-button routerLink="/profile">Profile</button>
     <button mat-button routerLink="/tests">All Tests</button>
     <button mat-button (click)="logout()">Logout</button>
   </ng-container>

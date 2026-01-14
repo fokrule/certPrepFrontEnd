@@ -1,45 +1,67 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
+export interface User {
+  name: string;
+  email: string;
+  joined: string; // ISO date string
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private fakeToken: string | null = null;
+  private currentUser: User | null = null;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+    // Load from localStorage on init
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      this.currentUser = JSON.parse(stored);
+    }
+  }
 
   login(email: string, password: string): boolean {
-    // Fake success - in real app use HTTP + real backend
+    // Fake success
     if (email && password) {
-      this.fakeToken = 'fake-jwt-token-' + Date.now();
-      localStorage.setItem('token', this.fakeToken);
+      const user: User = {
+        name: email.split('@')[0], // fake name from email
+        email,
+        joined: new Date().toISOString()
+      };
+      localStorage.setItem('token', 'fake-token-' + Date.now());
+      localStorage.setItem('user', JSON.stringify(user));
+      this.currentUser = user;
       return true;
     }
     return false;
   }
 
   register(name: string, email: string, password: string): boolean {
-  // Fake success - later replace with real API call
-  if (name && email && password) {
-    // In real app you would send to backend
-    this.fakeToken = 'fake-jwt-token-' + Date.now();
-    localStorage.setItem('token', this.fakeToken);
+    // Fake register
+    const user: User = {
+      name,
+      email,
+      joined: new Date().toISOString()
+    };
+    localStorage.setItem('token', 'fake-token-' + Date.now());
+    localStorage.setItem('user', JSON.stringify(user));
+    this.currentUser = user;
     return true;
   }
-  return false;
-}
 
   logout(): void {
-    this.fakeToken = null;
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    this.currentUser = null;
+    this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
+  getCurrentUser(): User | null {
+    return this.currentUser;
   }
 }
