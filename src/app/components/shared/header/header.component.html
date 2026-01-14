@@ -1,1 +1,15 @@
-<p>header works!</p>
+<mat-toolbar color="primary">
+  <span>Cert Prep - Practice Tests</span>
+  
+  <span class="spacer"></span>
+  
+  <ng-container *ngIf="isLoggedIn; else notLogged">
+    <button mat-button routerLink="/tests">All Tests</button>
+    <button mat-button (click)="logout()">Logout</button>
+  </ng-container>
+  
+  <ng-template #notLogged>
+    <button mat-button routerLink="/login">Login</button>
+    <button mat-button routerLink="/register">Register</button>
+  </ng-template>
+</mat-toolbar>
