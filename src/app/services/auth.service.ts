@@ -5,6 +5,7 @@ export interface User {
   name: string;
   email: string;
   joined: string; // ISO date string
+  role: 'user' | 'admin';
 }
 
 @Injectable({
@@ -27,7 +28,8 @@ export class AuthService {
       const user: User = {
         name: email.split('@')[0], // fake name from email
         email,
-        joined: new Date().toISOString()
+        joined: new Date().toISOString(),
+        role: email.includes('admin') ? 'admin' : 'user'  // ← fake: use 'admin@email.com' for admin
       };
       localStorage.setItem('token', 'fake-token-' + Date.now());
       localStorage.setItem('user', JSON.stringify(user));
@@ -42,7 +44,8 @@ export class AuthService {
     const user: User = {
       name,
       email,
-      joined: new Date().toISOString()
+      joined: new Date().toISOString(),
+      role: email.includes('admin') ? 'admin' : 'user'
     };
     localStorage.setItem('token', 'fake-token-' + Date.now());
     localStorage.setItem('user', JSON.stringify(user));
@@ -63,5 +66,9 @@ export class AuthService {
 
   getCurrentUser(): User | null {
     return this.currentUser;
+  }
+
+  isAdmin(): boolean {
+    return this.getCurrentUser()?.role === 'admin';
   }
 }

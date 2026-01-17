@@ -6,6 +6,9 @@
   <ng-container *ngIf="isLoggedIn; else notLogged">
     <button mat-button routerLink="/profile">Profile</button>
     <button mat-button routerLink="/tests">All Tests</button>
+    @if (isAdmin) {
+      <button mat-button routerLink="/admin">Admin</button>
+    }
     <button mat-button (click)="logout()">Logout</button>
   </ng-container>
   
