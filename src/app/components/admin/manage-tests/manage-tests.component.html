@@ -1,1 +1,104 @@
-<p>manage-tests works!</p>
+<h2>Manage Tests</h2>
+
+<!-- ADD NEW TEST FORM -->
+<form [formGroup]="addForm" (ngSubmit)="addTest()" class="add-form">
+  <mat-form-field>
+    <mat-label>Title</mat-label>
+    <input matInput formControlName="title" required>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Certificate</mat-label>
+    <input matInput formControlName="certificate" required>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Difficulty</mat-label>
+    <mat-select formControlName="difficulty" required>
+      <mat-option value="Easy">Easy</mat-option>
+      <mat-option value="Medium">Medium</mat-option>
+      <mat-option value="Hard">Hard</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" type="submit" [disabled]="addForm.invalid">
+    Add New Test
+  </button>
+</form>
+
+<!-- EDIT FORM (appears when editing) -->
+@if (editingTest) {
+  <div class="edit-section">
+    <h3>Editing: {{ editingTest.title }}</h3>
+
+    <form [formGroup]="editForm" (ngSubmit)="saveEdit()">
+      <mat-form-field>
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title" required>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Certificate</mat-label>
+        <input matInput formControlName="certificate" required>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Difficulty</mat-label>
+        <mat-select formControlName="difficulty" required>
+          <mat-option value="Easy">Easy</mat-option>
+          <mat-option value="Medium">Medium</mat-option>
+          <mat-option value="Hard">Hard</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="editForm.invalid">
+          Save Changes
+        </button>
+        <button mat-button type="button" (click)="cancelEdit()">Cancel</button>
+      </div>
+    </form>
+  </div>
+}
+
+<!-- TEST LIST TABLE -->
+<table mat-table [dataSource]="tests" class="test-table">
+  <!-- Columns same as before -->
+  <ng-container matColumnDef="title">
+    <th mat-header-cell *matHeaderCellDef>Title</th>
+    <td mat-cell *matCellDef="let test">{{ test.title }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="certificate">
+    <th mat-header-cell *matHeaderCellDef>Certificate</th>
+    <td mat-cell *matCellDef="let test">{{ test.certificate }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="difficulty">
+    <th mat-header-cell *matHeaderCellDef>Difficulty</th>
+    <td mat-cell *matCellDef="let test">{{ test.difficulty }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+  <th mat-header-cell *matHeaderCellDef>Actions</th>
+  <td mat-cell *matCellDef="let test">
+    <!-- Edit -->
+    <button mat-icon-button color="primary" (click)="startEdit(test)" matTooltip="Edit Test">
+      <mat-icon>edit</mat-icon>
+    </button>
+
+    <!-- Delete -->
+    <button mat-icon-button color="warn" (click)="deleteTest(test.id)" matTooltip="Delete Test">
+      <mat-icon>delete</mat-icon>
+    </button>
+
+    <!-- NEW: Manage Questions Icon -->
+    <button mat-icon-button color="accent" (click)="manageQuestions(test.id)" matTooltip="Manage Questions">
+      <mat-icon>question_answer</mat-icon>
+    </button>
+  </td>
+</ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

@@ -9,6 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TestService } from '@services/test.service';
 import { PracticeTest, Question } from '@models/test.models';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-manage-questions',
@@ -78,6 +79,7 @@ export class ManageQuestionsComponent implements OnInit {
   displayedColumns = ['text', 'correct', 'actions'];
 
   private fb = inject(FormBuilder);
+  constructor(private cdr: ChangeDetectorRef) {}
   questionForm = this.fb.group({
     text: ['', Validators.required],
     options: this.fb.array([this.fb.control('', Validators.required), this.fb.control('', Validators.required), this.fb.control('', Validators.required), this.fb.control('', Validators.required)]),
@@ -91,30 +93,71 @@ export class ManageQuestionsComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   ngOnInit() {
-    const testId = this.route.snapshot.paramMap.get('testId');
-    if (testId) {
-      this.testService.getTestById(testId).subscribe(test => this.test = test || null);
-    }
+  const testId = this.route.snapshot.paramMap.get('testId');
+  console.log('Loading test with ID:', testId); // Debug
+
+  if (testId) {
+    this.testService.getTestById(testId).subscribe({
+      next: (test) => {
+        this.test = test || null;
+        console.log('Test loaded:', this.test); // Debug
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading test:', err);
+      }
+    });
+  } else {
+    console.warn('No testId in URL');
+  }
+}
+
+  // In addQuestion()
+  addQuestion() {
+  if (!this.test) {
+    console.warn('No test selected - cannot add question');
+    return;
   }
 
-  addQuestion() {
-    if (this.questionForm.valid && this.test) {
-      const value = this.questionForm.value;
-      const newQuestion: Question = {
-        id: 'q' + Date.now(), // fake ID
-        text: value.text!,
-        options: (value.options ?? []).map((text: string | null, i: number) => ({
-          id: String.fromCharCode(97 + i),
-          text: text ?? ''  // fallback if somehow null
-        })),
-        correctAnswerId: value.correctAnswerId!
-      };
-      // In real: this.testService.addQuestion(this.test.id, newQuestion).subscribe(...)
-      console.log('Added question:', newQuestion);
-      this.test.questions.push(newQuestion);
-      this.questionForm.reset();
-    }
+  this.questionForm.markAllAsTouched(); // Show errors on all fields
+
+  if (this.questionForm.valid) {
+    const value = this.questionForm.value;
+
+    console.log('Form values:', value); // Debug: see what is submitted
+
+    const newQuestion: Question = {
+      id: 'q-' + Date.now(),
+      text: value.text || '',
+      options: (value.options ?? []).map((text: string | null, i: number) => ({
+        id: String.fromCharCode(97 + i),
+        text: text ?? ''
+      })),
+      correctAnswerId: value.correctAnswerId || ''
+    };
+
+    this.test.questions.push(newQuestion);
+    this.test.questionsCount = this.test.questions.length;
+
+    // Force UI update
+    this.test = { ...this.test };
+    this.cdr.detectChanges();
+
+    // Reset form correctly
+    this.questionForm.reset();
+    this.questionForm.setControl('options', this.fb.array(
+      Array(4).fill(null).map(() => this.fb.control('', Validators.required))
+    ));
+
+    console.log('Question added successfully:', newQuestion);
+  } else {
+    console.log('Form is invalid. Errors:', this.questionForm.errors);
+    Object.keys(this.questionForm.controls).forEach(key => {
+      const control = this.questionForm.get(key);
+      console.log(`Field ${key} errors:`, control?.errors);
+    });
   }
+}
 
   editQuestion(q: Question) {
     // Implement form population for edit
@@ -126,5 +169,9 @@ export class ManageQuestionsComponent implements OnInit {
       this.test.questions = this.test.questions.filter(q => q.id !== id);
       // In real: this.testService.deleteQuestion(this.test.id, id).subscribe(...)
     }
+  }
+
+  char(index: number): string {
+    return String.fromCharCode(65 + index); // A, B, C, D...
   }
 }

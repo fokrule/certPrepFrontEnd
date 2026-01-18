@@ -162,4 +162,8 @@ export class TestService {
       })
     );
   }
+
+  addTest(newTest: PracticeTest) {
+    this.mockTests.push(newTest);
+  }
 }

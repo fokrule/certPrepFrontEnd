@@ -1,1 +1,81 @@
-<p>manage-questions works!</p>
+<div class="questions-container">
+  <h2>Manage Questions for "{{ test?.title || 'Selected Test' }}"</h2>
+
+  <!-- ADD NEW QUESTION FORM -->
+  <form [formGroup]="questionForm" (ngSubmit)="addQuestion()" class="add-question-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Question Text</mat-label>
+      <textarea matInput formControlName="text" rows="3" required></textarea>
+      <mat-error *ngIf="questionForm.get('text')?.hasError('required')">
+        Question text is required
+      </mat-error>
+    </mat-form-field>
+
+    <div class="options-grid" formArrayName="options">
+      <h4>Options (A, B, C, D)</h4>
+      @for (opt of options.controls; track $index; let i = $index) {
+        <mat-form-field appearance="outline">
+          <mat-label>Option {{ char(i) }}</mat-label>
+          <input matInput [formControlName]="i" required>
+          <mat-error *ngIf="opt.hasError('required')">
+            Option is required
+          </mat-error>
+        </mat-form-field>
+      }
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Correct Option (a, b, c, or d)</mat-label>
+      <input matInput formControlName="correctAnswerId" required pattern="[a-d]">
+      <mat-error *ngIf="questionForm.get('correctAnswerId')?.hasError('required')">
+        Correct answer is required
+      </mat-error>
+      <mat-error *ngIf="questionForm.get('correctAnswerId')?.hasError('pattern')">
+        Must be a, b, c, or d
+      </mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="questionForm.invalid">
+      Add Question
+    </button>
+  </form>
+
+  <!-- LIST OF EXISTING QUESTIONS -->
+  <h3>Existing Questions ({{ test?.questions?.length || 0 }})</h3>
+
+  @if (test?.questions?.length) {
+    <table mat-table [dataSource]="test.questions" class="question-table">
+      <!-- Question Text -->
+      <ng-container matColumnDef="text">
+        <th mat-header-cell *matHeaderCellDef>Question</th>
+        <td mat-cell *matCellDef="let q">{{ q.text | slice:0:100 }}{{ q.text.length > 100 ? '...' : '' }}</td>
+      </ng-container>
+
+      <!-- Correct Answer -->
+      <ng-container matColumnDef="correct">
+        <th mat-header-cell *matHeaderCellDef>Correct</th>
+        <td mat-cell *matCellDef="let q">
+          <strong>{{ q.correctAnswerId?.toUpperCase() }}</strong>
+        </td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let q">
+          <button mat-icon-button color="primary" (click)="editQuestion(q)" matTooltip="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteQuestion(q.id)" matTooltip="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  } @else {
+    <p class="no-data">No questions yet. Add your first question above!</p>
+  }
+</div>
