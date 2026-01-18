@@ -8,6 +8,7 @@ import { TestResultComponent } from './components/tests/test-result/test-result.
 import { AdminComponent } from './components/admin/admin.component';
 import { ManageTestsComponent } from './components/admin/manage-tests/manage-tests.component';
 import { ManageQuestionsComponent } from './components/admin/manage-questions/manage-questions.component';
+import { QuestionBankComponent } from './components/admin/question-bank/question-bank.component';
 import { adminGuard } from './guards/admin.guard';
 
 import { authGuard } from './guards/auth.guard';
@@ -36,6 +37,10 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'tests', pathMatch: 'full' },
       { path: 'tests', component: ManageTestsComponent },
+      {
+        path: 'questions-bank',
+        component: QuestionBankComponent
+      },
       { path: 'questions/:testId', component: ManageQuestionsComponent }
     ]
   },

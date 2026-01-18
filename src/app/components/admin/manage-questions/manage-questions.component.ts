@@ -133,7 +133,10 @@ export class ManageQuestionsComponent implements OnInit {
         id: String.fromCharCode(97 + i),
         text: text ?? ''
       })),
-      correctAnswerId: value.correctAnswerId || ''
+      correctAnswerId: value.correctAnswerId || '',
+      category: 'General',              
+      difficulty: 'Medium',             
+      isPremium: false                  
     };
 
     this.test.questions.push(newQuestion);

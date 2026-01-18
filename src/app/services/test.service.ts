@@ -8,6 +8,56 @@ import { PracticeTest, Question, Answer } from '@models/test.models';  //
 })
 export class TestService {
 
+  private mockQuestions: Question[] = [
+    {
+      id: 'q1',
+      text: 'What is AWS Lambda?',
+      options: [
+        { id: 'a', text: 'Serverless compute service' },
+        { id: 'b', text: 'Virtual server' },
+        { id: 'c', text: 'Object storage' },
+        { id: 'd', text: 'Database' }
+      ],
+      correctAnswerId: 'a',
+      category: 'AWS Lambda',
+      difficulty: 'Medium',
+      isPremium: false,
+      tags: ['serverless', 'compute']
+    },
+    // Add 5–10 more mock questions here for testing...
+  ];
+
+  // ── QUESTION BANK METHODS ────────────────────────────────────────
+  getQuestions(): Observable<Question[]> {
+    return of(this.mockQuestions);
+  }
+
+  getQuestionsByCategory(category: string): Observable<Question[]> {
+    return of(this.mockQuestions.filter(q => q.category === category));
+  }
+
+  addQuestion(question: Omit<Question, 'id'>): Observable<Question> {
+    const newQ: Question = {
+      ...question,
+      id: 'q-' + Date.now()
+    };
+    this.mockQuestions.push(newQ);
+    return of(newQ);
+  }
+
+  updateQuestion(updated: Question): Observable<Question> {
+    const index = this.mockQuestions.findIndex(q => q.id === updated.id);
+    if (index !== -1) {
+      this.mockQuestions[index] = updated;
+    }
+    return of(updated);
+  }
+
+  deleteQuestion(id: string): Observable<void> {
+    this.mockQuestions = this.mockQuestions.filter(q => q.id !== id);
+    return of(void 0);
+  }
+
   private mockTests: PracticeTest[] = [
   {
     id: 'aws-dev-associate',
@@ -29,7 +79,10 @@ export class TestService {
           { id: 'c', text: 'S3' },
           { id: 'd', text: 'RDS' }
         ],
-        correctAnswerId: 'b'
+        correctAnswerId: 'b',
+        category: 'AWS Lambda',          // ← ADD THIS
+        difficulty: 'Medium',            // ← ADD THIS
+        isPremium: false
       },
       {
         id: 'q2',
@@ -40,7 +93,10 @@ export class TestService {
           { id: 'c', text: 'EFS' },
           { id: 'd', text: 'Glacier' }
         ],
-        correctAnswerId: 'b'
+        correctAnswerId: 'b',
+        category: 'IAM',
+        difficulty: 'Easy',
+        isPremium: false
       },
       {
         id: 'q3',
@@ -51,7 +107,10 @@ export class TestService {
           { id: 'c', text: 'SES' },
           { id: 'd', text: 'Step Functions' }
         ],
-        correctAnswerId: 'b'
+        correctAnswerId: 'b',
+        category: 'IAM',
+        difficulty: 'Easy',
+        isPremium: false
       }
     ]
   },

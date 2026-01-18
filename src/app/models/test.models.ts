@@ -18,9 +18,28 @@ export interface Question {
   text: string;
   options: { id: string; text: string }[];
   correctAnswerId?: string;
+  category: string;           // NEW: e.g. "AWS Lambda", "Security", "Kubernetes"
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  isPremium: boolean;         // NEW: true = paid content only
+  tags?: string[];            // optional
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Answer {
   questionId: string;
   selectedOptionId: string | null;
+}
+
+// Optional: add later for test templates
+export interface TestTemplate {
+  id: string;
+  title: string;
+  certificate: string;
+  totalQuestions: number;
+  durationMinutes: number;
+  difficulty: 'Easy' | 'Medium' | 'Hard' | 'Mixed';
+  isPremium: boolean;
+  categories: string[];  // only pull questions from these
+  passThreshold: number;
 }

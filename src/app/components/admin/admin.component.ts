@@ -28,9 +28,9 @@ import { MatIconModule } from '@angular/material/icon';
             <mat-icon>quiz</mat-icon>
             Manage Tests
           </a>
-          <a mat-list-item routerLink="/admin" [routerLink]="['/admin/questions', selectedTestId || '']" routerLinkActive="active" [class.disabled]="!selectedTestId">
-            <mat-icon>question_answer</mat-icon>
-            Manage Questions
+          <a mat-list-item routerLink="/admin/questions-bank">
+            <mat-icon>library_books</mat-icon>
+            Question Bank
           </a>
         </mat-nav-list>
       </mat-drawer>
