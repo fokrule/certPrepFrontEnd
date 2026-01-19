@@ -1,12 +1,57 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { PracticeTest, Question, Answer } from '@models/test.models';  //
+import { PracticeTest, Question, Answer, TestTemplate } from '@models/test.models';  
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestService {
+
+  // Global test templates (rules only)
+private mockTestTemplates: TestTemplate[] = [
+  {
+    id: 'temp-aws-dev',
+    title: 'AWS Developer Associate Practice',
+    certificate: 'AWS Certified Developer - Associate',
+    description: 'Full practice set for certification',
+    durationMinutes: 130,
+    totalQuestions: 65,
+    difficulty: 'Medium',
+    isPremium: false,
+    categories: ['AWS Lambda', 'IAM', 'DynamoDB', 'S3'],
+    passThreshold: 70,
+    createdAt: new Date().toISOString()
+  }
+  // Add more later...
+];
+
+// ── TEST TEMPLATE METHODS ────────────────────────────────────────
+getTestTemplates(): Observable<TestTemplate[]> {
+  return of(this.mockTestTemplates);
+}
+
+addTestTemplate(template: Omit<TestTemplate, 'id'>): Observable<TestTemplate> {
+  const newTemplate: TestTemplate = {
+    ...template,
+    id: 'temp-' + Date.now()
+  };
+  this.mockTestTemplates.push(newTemplate);
+  return of(newTemplate);
+}
+
+updateTestTemplate(updated: TestTemplate): Observable<TestTemplate> {
+  const index = this.mockTestTemplates.findIndex(t => t.id === updated.id);
+  if (index !== -1) {
+    this.mockTestTemplates[index] = updated;
+  }
+  return of(updated);
+}
+
+deleteTestTemplate(id: string): Observable<void> {
+  this.mockTestTemplates = this.mockTestTemplates.filter(t => t.id !== id);
+  return of(void 0);
+}
 
   private mockQuestions: Question[] = [
     {

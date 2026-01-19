@@ -32,6 +32,10 @@ import { MatIconModule } from '@angular/material/icon';
             <mat-icon>library_books</mat-icon>
             Question Bank
           </a>
+          <a mat-list-item routerLink="/admin/test-templates" routerLinkActive="active">
+            <mat-icon>assignment</mat-icon>
+            Test Templates
+          </a>
         </mat-nav-list>
       </mat-drawer>
 

@@ -61,7 +61,7 @@ export class QuestionBankComponent implements OnInit {
   addOrUpdateQuestion() {
     if (this.questionForm.valid) {
       const value = this.questionForm.value;
-
+      
       const options = [
         { id: 'a', text: value.optionA || '' },
         { id: 'b', text: value.optionB || '' },
@@ -83,12 +83,14 @@ export class QuestionBankComponent implements OnInit {
         const updated = { ...this.editingQuestion, ...questionData };
         this.testService.updateQuestion(updated).subscribe(() => {
           this.loadQuestions();
+          this.questions = [...this.questions];
           this.cancelEdit();
         });
       } else {
         // Add new
         this.testService.addQuestion(questionData).subscribe(() => {
           this.loadQuestions();
+          this.questions = [...this.questions];
           this.questionForm.reset();
         });
       }
@@ -118,6 +120,8 @@ export class QuestionBankComponent implements OnInit {
   deleteQuestion(id: string) {
     if (confirm('Delete this question permanently?')) {
       this.testService.deleteQuestion(id).subscribe(() => this.loadQuestions());
+      this.loadQuestions();
+      this.questions = [...this.questions];
     }
   }
 }

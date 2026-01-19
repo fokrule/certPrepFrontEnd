@@ -1,0 +1,96 @@
+<h2>Test Templates</h2>
+
+<form [formGroup]="templateForm" (ngSubmit)="addOrUpdateTemplate()" class="template-form">
+  <mat-form-field class="full-width">
+    <mat-label>Title</mat-label>
+    <input matInput formControlName="title" required>
+  </mat-form-field>
+
+  <mat-form-field class="full-width">
+    <mat-label>Certificate</mat-label>
+    <input matInput formControlName="certificate" required>
+  </mat-form-field>
+
+  <mat-form-field class="full-width">
+    <mat-label>Description</mat-label>
+    <textarea matInput formControlName="description"></textarea>
+  </mat-form-field>
+
+  <div class="form-row">
+    <mat-form-field>
+      <mat-label>Duration (minutes)</mat-label>
+      <input matInput type="number" formControlName="durationMinutes" required min="30">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Total Questions</mat-label>
+      <input matInput type="number" formControlName="totalQuestions" required min="10">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Pass Threshold (%)</mat-label>
+      <input matInput type="number" formControlName="passThreshold" required min="50" max="100">
+    </mat-form-field>
+  </div>
+
+  <div class="form-row">
+    <mat-form-field>
+      <mat-label>Difficulty</mat-label>
+      <mat-select formControlName="difficulty" required>
+        <mat-option value="Easy">Easy</mat-option>
+        <mat-option value="Medium">Medium</mat-option>
+        <mat-option value="Hard">Hard</mat-option>
+        <mat-option value="Mixed">Mixed</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="isPremium">Premium Test (Paid Only)</mat-checkbox>
+  </div>
+
+  <div class="form-actions">
+    <button mat-raised-button color="primary" type="submit" [disabled]="templateForm.invalid">
+      {{ editingTemplate ? 'Update Template' : 'Create Template' }}
+    </button>
+    @if (editingTemplate) {
+      <button mat-button type="button" (click)="cancelEdit()">Cancel</button>
+    }
+  </div>
+</form>
+
+<!-- List of Test Templates -->
+<table mat-table [dataSource]="templates" class="template-table">
+  <ng-container matColumnDef="title">
+    <th mat-header-cell *matHeaderCellDef>Title</th>
+    <td mat-cell *matCellDef="let t">{{ t.title }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="certificate">
+    <th mat-header-cell *matHeaderCellDef>Certificate</th>
+    <td mat-cell *matCellDef="let t">{{ t.certificate }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="totalQuestions">
+    <th mat-header-cell *matHeaderCellDef>Questions</th>
+    <td mat-cell *matCellDef="let t">{{ t.totalQuestions }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="duration">
+    <th mat-header-cell *matHeaderCellDef>Duration</th>
+    <td mat-cell *matCellDef="let t">{{ t.durationMinutes }} min</td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Actions</th>
+    <td mat-cell *matCellDef="let t">
+      <button mat-icon-button color="primary" (click)="startEdit(t)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="deleteTemplate(t.id)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="['title','certificate','totalQuestions','duration','actions']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['title','certificate','totalQuestions','duration','actions'];"></tr>
+</table>

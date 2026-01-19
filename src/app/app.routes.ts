@@ -9,6 +9,7 @@ import { AdminComponent } from './components/admin/admin.component';
 import { ManageTestsComponent } from './components/admin/manage-tests/manage-tests.component';
 import { ManageQuestionsComponent } from './components/admin/manage-questions/manage-questions.component';
 import { QuestionBankComponent } from './components/admin/question-bank/question-bank.component';
+import { TestTemplatesComponent } from './components/admin/test-templates/test-templates.component';
 import { adminGuard } from './guards/admin.guard';
 
 import { authGuard } from './guards/auth.guard';
@@ -41,6 +42,7 @@ export const routes: Routes = [
         path: 'questions-bank',
         component: QuestionBankComponent
       },
+      { path: 'test-templates', component: TestTemplatesComponent },
       { path: 'questions/:testId', component: ManageQuestionsComponent }
     ]
   },

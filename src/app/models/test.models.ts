@@ -36,10 +36,13 @@ export interface TestTemplate {
   id: string;
   title: string;
   certificate: string;
-  totalQuestions: number;
+  description?: string;
   durationMinutes: number;
+  totalQuestions: number;
   difficulty: 'Easy' | 'Medium' | 'Hard' | 'Mixed';
   isPremium: boolean;
-  categories: string[];  // only pull questions from these
-  passThreshold: number;
+  categories: string[];          // e.g. ["AWS Lambda", "IAM", "VPC"]
+  passThreshold: number;         // e.g. 70
+  createdAt?: string;
+  updatedAt?: string;
 }
