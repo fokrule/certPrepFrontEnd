@@ -47,6 +47,25 @@
     <mat-checkbox formControlName="isPremium">Premium Test (Paid Only)</mat-checkbox>
   </div>
 
+  <mat-form-field class="full-width">
+  <mat-label>Select Categories</mat-label>
+  <mat-select formControlName="categories" multiple>
+    @for (cat of availableCategories; track cat) {
+      <mat-option [value]="cat">{{ cat }}</mat-option>
+    }
+  </mat-select>
+  <mat-hint>Choose categories to pull questions from</mat-hint>
+  </mat-form-field>
+
+  <!-- Display selected categories as chips (nice UX) -->
+  @if (templateForm.get('categories')?.value?.length) {
+    <mat-chip-listbox>
+      @for (cat of templateForm.get('categories')?.value; track cat) {
+        <mat-chip>{{ cat }}</mat-chip>
+      }
+    </mat-chip-listbox>
+  }
+
   <div class="form-actions">
     <button mat-raised-button color="primary" type="submit" [disabled]="templateForm.invalid">
       {{ editingTemplate ? 'Update Template' : 'Create Template' }}

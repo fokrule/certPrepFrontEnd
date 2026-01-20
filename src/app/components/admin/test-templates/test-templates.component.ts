@@ -7,9 +7,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
 import { CommonModule } from '@angular/common';
 import { TestService } from '@services/test.service';
-import { TestTemplate } from '@models/test.models';
+import { TestTemplate, Question } from '@models/test.models';
 
 @Component({
   selector: 'app-test-templates',
@@ -23,7 +24,8 @@ import { TestTemplate } from '@models/test.models';
     MatSelectModule,
     MatCheckboxModule,
     MatFormFieldModule,
-    MatIconModule
+    MatIconModule,
+    MatChipsModule
   ],
   templateUrl: './test-templates.component.html',
   styleUrls: ['./test-templates.component.scss']
@@ -32,6 +34,7 @@ export class TestTemplatesComponent implements OnInit {
   
   private fb = inject(FormBuilder);
   templates: TestTemplate[] = [];
+  availableCategories: string[] = [];
   displayedColumns = ['title', 'certificate', 'totalQuestions', 'duration', 'actions'];
 
   editingTemplate: TestTemplate | null = null;
@@ -44,23 +47,33 @@ export class TestTemplatesComponent implements OnInit {
     totalQuestions: [50, [Validators.required, Validators.min(10)]],
     difficulty: ['Medium', Validators.required],
     isPremium: [false],
-    passThreshold: [70, [Validators.required, Validators.min(50), Validators.max(100)]]
-    // categories: we'll add multi-select in next iteration
+    passThreshold: [70, [Validators.required, Validators.min(50), Validators.max(100)]],
+    categories: [[] as string[], Validators.required]
   });
 
   private testService = inject(TestService);
 
   ngOnInit() {
     this.loadTemplates();
+    this.loadCategories();
   }
 
   loadTemplates() {
   this.testService.getTestTemplates().subscribe(templates => {
     this.templates = templates;
-    this.templates = [...this.templates];  // ← Extra safety
+    this.templates = [...this.templates];  
   });
 }
 
+  loadCategories() {
+    this.testService.getQuestions().subscribe(questions => {
+      const cats = new Set<string>();
+      questions.forEach(q => {
+        if (q.category) cats.add(q.category);
+      });
+      this.availableCategories = Array.from(cats).sort();
+    });
+  }
   addOrUpdateTemplate() {
     if (this.templateForm.valid) {
       const value = this.templateForm.value;
@@ -73,7 +86,7 @@ export class TestTemplatesComponent implements OnInit {
         totalQuestions: value.totalQuestions!,
         difficulty: value.difficulty as any,
         isPremium: !!value.isPremium,
-        categories: [], // placeholder - we'll add category selection later
+        categories: value.categories || [],
         passThreshold: value.passThreshold!
       };
 
@@ -103,7 +116,8 @@ export class TestTemplatesComponent implements OnInit {
       totalQuestions: template.totalQuestions,
       difficulty: template.difficulty,
       isPremium: template.isPremium,
-      passThreshold: template.passThreshold
+      passThreshold: template.passThreshold,
+      categories: template.categories || []
     });
   }
 
