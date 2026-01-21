@@ -8,9 +8,13 @@
   </mat-form-field>
 
   <div class="form-row">
-    <mat-form-field>
+    <mat-form-field class="full-width">
       <mat-label>Category</mat-label>
-      <input matInput formControlName="category" required placeholder="e.g. AWS Lambda">
+      <mat-select formControlName="categoryId" required>
+        @for (cat of availableCategories; track cat.id) {
+          <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field>

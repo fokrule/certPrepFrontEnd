@@ -24,10 +24,6 @@ import { MatIconModule } from '@angular/material/icon';
           <h2>Admin Panel</h2>
         </div>
         <mat-nav-list>
-          <a mat-list-item routerLink="/admin/tests" routerLinkActive="active">
-            <mat-icon>quiz</mat-icon>
-            Manage Tests
-          </a>
           <a mat-list-item routerLink="/admin/questions-bank">
             <mat-icon>library_books</mat-icon>
             Question Bank
@@ -35,6 +31,10 @@ import { MatIconModule } from '@angular/material/icon';
           <a mat-list-item routerLink="/admin/test-templates" routerLinkActive="active">
             <mat-icon>assignment</mat-icon>
             Test Templates
+          </a>
+          <a mat-list-item routerLink="/admin/categories" routerLinkActive="active">
+            <mat-icon>category</mat-icon>
+            Category Management
           </a>
         </mat-nav-list>
       </mat-drawer>

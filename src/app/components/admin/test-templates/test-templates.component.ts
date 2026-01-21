@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { CommonModule } from '@angular/common';
 import { TestService } from '@services/test.service';
-import { TestTemplate, Question } from '@models/test.models';
+import { TestTemplate, Question, Category } from '@models/test.models';
 
 @Component({
   selector: 'app-test-templates',
@@ -34,7 +34,7 @@ export class TestTemplatesComponent implements OnInit {
   
   private fb = inject(FormBuilder);
   templates: TestTemplate[] = [];
-  availableCategories: string[] = [];
+  availableCategories: Category[] = [];
   displayedColumns = ['title', 'certificate', 'totalQuestions', 'duration', 'actions'];
 
   editingTemplate: TestTemplate | null = null;
@@ -66,14 +66,10 @@ export class TestTemplatesComponent implements OnInit {
 }
 
   loadCategories() {
-    this.testService.getQuestions().subscribe(questions => {
-      const cats = new Set<string>();
-      questions.forEach(q => {
-        if (q.category) cats.add(q.category);
-      });
-      this.availableCategories = Array.from(cats).sort();
-    });
-  }
+  this.testService.getCategories().subscribe(cats => {
+    this.availableCategories = cats;
+  });
+}
   addOrUpdateTemplate() {
     if (this.templateForm.valid) {
       const value = this.templateForm.value;
@@ -132,5 +128,11 @@ export class TestTemplatesComponent implements OnInit {
       this.loadTemplates();
       this.templates = [...this.templates];
     }
+  }
+
+  // Add this method in the class
+  getCategoryName(catId: string): string {
+    const cat = this.availableCategories.find(c => c.id === catId);
+    return cat ? cat.name : catId;  // fallback to ID if not found
   }
 }

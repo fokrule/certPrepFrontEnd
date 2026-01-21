@@ -9,7 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { TestService } from '@services/test.service';
-import { Question } from '@models/test.models';
+import { Question, Category } from '@models/test.models';
 
 @Component({
   selector: 'app-question-bank',
@@ -31,13 +31,14 @@ import { Question } from '@models/test.models';
 export class QuestionBankComponent implements OnInit {
   private fb = inject(FormBuilder);
   questions: Question[] = [];
+  availableCategories: Category[] = [];
   displayedColumns = ['text', 'category', 'difficulty', 'premium', 'actions'];
 
   editingQuestion: Question | null = null;
 
   questionForm = this.fb.group({
     text: ['', Validators.required],
-    category: ['', Validators.required],           // NEW
+    categoryId: ['', Validators.required],
     difficulty: ['', Validators.required],         // NEW
     isPremium: [false],                            // NEW
     optionA: ['', Validators.required],
@@ -54,6 +55,11 @@ export class QuestionBankComponent implements OnInit {
     this.loadQuestions();
   }
 
+  loadCategories() {
+    this.testService.getCategories().subscribe(cats => {
+      this.availableCategories = cats;  // now Category[]
+    });
+  }
   loadQuestions() {
     this.testService.getQuestions().subscribe(qs => this.questions = qs);
   }
@@ -73,7 +79,7 @@ export class QuestionBankComponent implements OnInit {
         text: value.text!,
         options,
         correctAnswerId: value.correctAnswer!,
-        category: value.category!,                   
+        categoryId: value.categoryId!,                   
         difficulty: value.difficulty as 'Easy' | 'Medium' | 'Hard',  
         isPremium: !!value.isPremium                 
       };
@@ -101,7 +107,7 @@ export class QuestionBankComponent implements OnInit {
     this.editingQuestion = q;
     this.questionForm.patchValue({
       text: q.text,
-      category: q.category,                       // NEW
+      categoryId: q.categoryId,                       // NEW
       difficulty: q.difficulty,                   // NEW
       isPremium: q.isPremium,                     // NEW
       optionA: q.options.find(o => o.id === 'a')?.text || '',
