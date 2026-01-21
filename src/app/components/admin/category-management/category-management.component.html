@@ -1,0 +1,49 @@
+<h2>Category Management</h2>
+
+<form [formGroup]="categoryForm" (ngSubmit)="addOrUpdateCategory()" class="category-form">
+  <mat-form-field class="full-width">
+    <mat-label>Category Name</mat-label>
+    <input matInput formControlName="name" required>
+  </mat-form-field>
+
+  <mat-form-field class="full-width">
+    <mat-label>Description (optional)</mat-label>
+    <textarea matInput formControlName="description"></textarea>
+  </mat-form-field>
+
+  <div class="form-actions">
+    <button mat-raised-button color="primary" type="submit" [disabled]="categoryForm.invalid">
+      {{ editingCategory ? 'Update Category' : 'Add Category' }}
+    </button>
+    @if (editingCategory) {
+      <button mat-button type="button" (click)="cancelEdit()">Cancel</button>
+    }
+  </div>
+</form>
+
+<table mat-table [dataSource]="categories" class="category-table">
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let c">{{ c.name }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="description">
+    <th mat-header-cell *matHeaderCellDef>Description</th>
+    <td mat-cell *matCellDef="let c">{{ c.description || '-' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Actions</th>
+    <td mat-cell *matCellDef="let c">
+      <button mat-icon-button color="primary" (click)="startEdit(c)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="deleteCategory(c.id)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="['name','description','actions']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['name','description','actions'];"></tr>
+</table>

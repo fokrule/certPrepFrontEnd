@@ -134,7 +134,7 @@ export class ManageQuestionsComponent implements OnInit {
         text: text ?? ''
       })),
       correctAnswerId: value.correctAnswerId || '',
-      category: 'General',              
+      categoryId: 'General',              
       difficulty: 'Medium',             
       isPremium: false                  
     };

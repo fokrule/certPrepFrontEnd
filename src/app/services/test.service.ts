@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { PracticeTest, Question, Answer, TestTemplate } from '@models/test.models';  
+import { PracticeTest, Question, Answer, TestTemplate, Category } from '@models/test.models';  
 
 @Injectable({
   providedIn: 'root'
@@ -53,6 +53,41 @@ deleteTestTemplate(id: string): Observable<void> {
   return of(void 0);
 }
 
+// Global categories
+private mockCategories: Category[] = [
+  { id: 'cat-aws-lambda', name: 'AWS Lambda', isActive: true },
+  { id: 'cat-iam', name: 'IAM', isActive: true },
+  { id: 'cat-vpc', name: 'VPC & Networking', isActive: true },
+  // Add more...
+];
+
+// ── CATEGORY METHODS ─────────────────────────────────────────────
+getCategories(): Observable<Category[]> {
+  return of(this.mockCategories.filter(c => c.isActive));
+}
+
+addCategory(category: Omit<Category, 'id'>): Observable<Category> {
+  const newCat: Category = {
+    ...category,
+    id: 'cat-' + Date.now(),
+    isActive: true
+  };
+  this.mockCategories.push(newCat);
+  return of(newCat);
+}
+
+updateCategory(updated: Category): Observable<Category> {
+  const index = this.mockCategories.findIndex(c => c.id === updated.id);
+  if (index !== -1) {
+    this.mockCategories[index] = updated;
+  }
+  return of(updated);
+}
+
+deleteCategory(id: string): Observable<void> {
+  this.mockCategories = this.mockCategories.filter(c => c.id !== id);
+  return of(void 0);
+}
   private mockQuestions: Question[] = [
     {
       id: 'q1',
@@ -64,7 +99,7 @@ deleteTestTemplate(id: string): Observable<void> {
         { id: 'd', text: 'Database' }
       ],
       correctAnswerId: 'a',
-      category: 'AWS Lambda',
+      categoryId: 'AWS Lambda',
       difficulty: 'Medium',
       isPremium: false,
       tags: ['serverless', 'compute']
@@ -78,7 +113,7 @@ deleteTestTemplate(id: string): Observable<void> {
   }
 
   getQuestionsByCategory(category: string): Observable<Question[]> {
-    return of(this.mockQuestions.filter(q => q.category === category));
+    return of(this.mockQuestions.filter(q => q.categoryId === category));
   }
 
   addQuestion(question: Omit<Question, 'id'>): Observable<Question> {
@@ -125,7 +160,7 @@ deleteTestTemplate(id: string): Observable<void> {
           { id: 'd', text: 'RDS' }
         ],
         correctAnswerId: 'b',
-        category: 'AWS Lambda',          // ← ADD THIS
+        categoryId: 'AWS Lambda',          // ← ADD THIS
         difficulty: 'Medium',            // ← ADD THIS
         isPremium: false
       },
@@ -139,7 +174,7 @@ deleteTestTemplate(id: string): Observable<void> {
           { id: 'd', text: 'Glacier' }
         ],
         correctAnswerId: 'b',
-        category: 'IAM',
+        categoryId: 'IAM',
         difficulty: 'Easy',
         isPremium: false
       },
@@ -153,7 +188,7 @@ deleteTestTemplate(id: string): Observable<void> {
           { id: 'd', text: 'Step Functions' }
         ],
         correctAnswerId: 'b',
-        category: 'IAM',
+        categoryId: 'IAM',
         difficulty: 'Easy',
         isPremium: false
       }

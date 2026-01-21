@@ -10,6 +10,7 @@ import { ManageTestsComponent } from './components/admin/manage-tests/manage-tes
 import { ManageQuestionsComponent } from './components/admin/manage-questions/manage-questions.component';
 import { QuestionBankComponent } from './components/admin/question-bank/question-bank.component';
 import { TestTemplatesComponent } from './components/admin/test-templates/test-templates.component';
+import { CategoryManagementComponent } from './components/admin/category-management/category-management.component';
 import { adminGuard } from './guards/admin.guard';
 
 import { authGuard } from './guards/auth.guard';
@@ -27,7 +28,7 @@ export const routes: Routes = [
   // Protected routes - need to be logged in
   { path: 'test/:id', component: TestTakeComponent, canActivate: [authGuard] },
   { path: 'result/:id', component: TestResultComponent, canActivate: [authGuard] },
-  
+  { path: 'admin/categories', component: CategoryManagementComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   
   // admin route
