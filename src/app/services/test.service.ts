@@ -1,15 +1,57 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Injectable, inject } from '@angular/core';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { PracticeTest, Question, Answer, TestTemplate, Category } from '@models/test.models';  
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestService {
 
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:8080/api';  // ← CHANGE TO YOUR REAL API BASE URL
+
+  // ── CATEGORY API ──────────────────────────────────────────────────────
+  getCategories(): Observable<Category[]> {
+    return this.http.get<{ categories: Category[] }>(`${this.apiUrl}/category`).pipe(
+      map(res => res.categories || []),
+      catchError(err => {
+        console.error('Error fetching categories:', err);
+        return throwError(() => new Error('Failed to load categories'));
+      })
+    );
+  }
+
+  addCategory(category: Omit<Category, 'id'>): Observable<Category> {
+    return this.http.post<Category>(`${this.apiUrl}/category`, category).pipe(
+      catchError(err => {
+        console.error('Error adding category:', err);
+        return throwError(() => new Error('Failed to add category'));
+      })
+    );
+  }
+
+  updateCategory(updated: Category): Observable<Category> {
+    return this.http.put<Category>(`${this.apiUrl}/category/${updated.id}`, updated).pipe(
+      catchError(err => {
+        console.error('Error updating category:', err);
+        return throwError(() => new Error('Failed to update category'));
+      })
+    );
+  }
+
+  deleteCategory(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/category/${id}`).pipe(
+      catchError(err => {
+        console.error('Error deleting category:', err);
+        return throwError(() => new Error('Failed to delete category'));
+      })
+    );
+  }
+
   // Global test templates (rules only)
-private mockTestTemplates: TestTemplate[] = [
+  private mockTestTemplates: TestTemplate[] = [
   {
     id: 'temp-aws-dev',
     title: 'AWS Developer Associate Practice',
@@ -53,41 +95,6 @@ deleteTestTemplate(id: string): Observable<void> {
   return of(void 0);
 }
 
-// Global categories
-private mockCategories: Category[] = [
-  { id: 'cat-aws-lambda', name: 'AWS Lambda', isActive: true },
-  { id: 'cat-iam', name: 'IAM', isActive: true },
-  { id: 'cat-vpc', name: 'VPC & Networking', isActive: true },
-  // Add more...
-];
-
-// ── CATEGORY METHODS ─────────────────────────────────────────────
-getCategories(): Observable<Category[]> {
-  return of(this.mockCategories.filter(c => c.isActive));
-}
-
-addCategory(category: Omit<Category, 'id'>): Observable<Category> {
-  const newCat: Category = {
-    ...category,
-    id: 'cat-' + Date.now(),
-    isActive: true
-  };
-  this.mockCategories.push(newCat);
-  return of(newCat);
-}
-
-updateCategory(updated: Category): Observable<Category> {
-  const index = this.mockCategories.findIndex(c => c.id === updated.id);
-  if (index !== -1) {
-    this.mockCategories[index] = updated;
-  }
-  return of(updated);
-}
-
-deleteCategory(id: string): Observable<void> {
-  this.mockCategories = this.mockCategories.filter(c => c.id !== id);
-  return of(void 0);
-}
   private mockQuestions: Question[] = [
     {
       id: 'q1',
