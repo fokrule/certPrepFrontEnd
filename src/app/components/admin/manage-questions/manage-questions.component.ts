@@ -82,6 +82,7 @@ export class ManageQuestionsComponent implements OnInit {
   constructor(private cdr: ChangeDetectorRef) {}
   questionForm = this.fb.group({
     text: ['', Validators.required],
+    categoryId: ['', Validators.required],
     options: this.fb.array([this.fb.control('', Validators.required), this.fb.control('', Validators.required), this.fb.control('', Validators.required), this.fb.control('', Validators.required)]),
     correctAnswerId: ['', Validators.required]
   });
@@ -130,11 +131,11 @@ export class ManageQuestionsComponent implements OnInit {
       id: 'q-' + Date.now(),
       text: value.text || '',
       options: (value.options ?? []).map((text: string | null, i: number) => ({
-        id: String.fromCharCode(97 + i),
+        id: ['a','b','c','d'][i] as 'a'|'b'|'c'|'d',
         text: text ?? ''
       })),
-      correctAnswerId: value.correctAnswerId || '',
-      categoryId: 'General',              
+      correctAnswerId: (value.correctAnswerId || 'a') as 'a'|'b'|'c'|'d',
+      categoryId: Number(value.categoryId),   // form gives string, convert              
       difficulty: 'Medium',             
       isPremium: false                  
     };

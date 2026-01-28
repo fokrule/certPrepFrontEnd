@@ -77,7 +77,6 @@ export class ManageTestsComponent implements OnInit {
         durationMinutes: 60,
         difficulty: value.difficulty as 'Easy' | 'Medium' | 'Hard',
         tags: [],
-        timeLimitMinutes: 60,
         questions: []
       };
 

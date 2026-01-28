@@ -65,7 +65,7 @@ export class TestTakeComponent implements OnInit, OnDestroy {
         return;
       }
       this.test = test;
-      this.timeLeftSeconds = test.timeLimitMinutes * 60;
+      this.timeLeftSeconds = test.durationMinutes * 60;
       // Initialize answers
       this.answers = test.questions.map(q => ({ questionId: q.id, selectedOptionId: null }));
       this.startTimer();

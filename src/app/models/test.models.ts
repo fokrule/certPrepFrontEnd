@@ -2,23 +2,27 @@
 
 export interface PracticeTest {
   id: string;
+  templateId?: string;        // ← link back to template (optional)
   title: string;
   certificate: string;
-  description: string;
-  questionsCount: number;
+  description?: string;
   durationMinutes: number;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  tags: string[];
-  timeLimitMinutes: number;
-  questions: Question[];
+  questionsCount: number;     // redundant with questions.length, but ok for preview
+  difficulty: 'Easy' | 'Medium' | 'Hard' | 'Mixed';
+  isPremium?: boolean;
+  passThreshold?: number;      // from template
+  questions: Question[];      // the actual selected questions
+  createdAt?: string;
+  updatedAt?: string;
+  tags: string[]
 }
 
 export interface Question {
   id: string;
   text: string;
-  options: { id: string; text: string }[];
-  correctAnswerId?: string;
-  categoryId: string;           // NEW: e.g. "AWS Lambda", "Security", "Kubernetes"
+  options: Option[];
+  correctAnswerId: 'a' | 'b' | 'c' | 'd';
+  categoryId: number;           // NEW: e.g. "AWS Lambda", "Security", "Kubernetes"
   difficulty: 'Easy' | 'Medium' | 'Hard';
   isPremium: boolean;         // NEW: true = paid content only
   tags?: string[];            // optional
@@ -28,7 +32,7 @@ export interface Question {
 
 export interface Answer {
   questionId: string;
-  selectedOptionId: string | null;
+  selectedOptionId: string | null;  // 'a'|'b'|'c'|'d' | null
 }
 
 // Optional: add later for test templates
@@ -48,10 +52,14 @@ export interface TestTemplate {
 }
 
 export interface Category {
-  id: string;
+  id: number;
   name: string;               // e.g. "AWS Lambda"
-  description?: string;
-  isActive: boolean;
+  status: 1 | 0;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface Option {
+  id: 'a' | 'b' | 'c' | 'd';  // consistent with question bank
+  text: string;
 }
