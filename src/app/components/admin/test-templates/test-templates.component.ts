@@ -130,9 +130,10 @@ export class TestTemplatesComponent implements OnInit {
     }
   }
 
-  // Add this method in the class
   getCategoryName(catId: string): string {
-    const cat = this.availableCategories.find(c => c.id === catId);
-    return cat ? cat.name : catId;  // fallback to ID if not found
+    const idNum = Number(catId);
+    if (isNaN(idNum)) return catId; // fallback if conversion fails
+    const cat = this.availableCategories.find(c => c.id === idNum);
+    return cat ? cat.name : catId;
   }
 }

@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { PracticeTest, Question, Answer, TestTemplate, Category } from '@models/test.models';  
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -14,14 +14,16 @@ export class TestService {
 
   // ── CATEGORY API ──────────────────────────────────────────────────────
   getCategories(): Observable<Category[]> {
-    return this.http.get<{ categories: Category[] }>(`${this.apiUrl}/category`).pipe(
-      map(res => res.categories || []),
+    return this.http.get<Category[]>(`${this.apiUrl}/category`).pipe(
+      tap(res => console.log('API response:', res)),
       catchError(err => {
         console.error('Error fetching categories:', err);
         return throwError(() => new Error('Failed to load categories'));
       })
     );
   }
+
+
 
   addCategory(category: Omit<Category, 'id'>): Observable<Category> {
     return this.http.post<Category>(`${this.apiUrl}/category`, category).pipe(
@@ -41,7 +43,7 @@ export class TestService {
     );
   }
 
-  deleteCategory(id: string): Observable<void> {
+  deleteCategory(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/category/${id}`).pipe(
       catchError(err => {
         console.error('Error deleting category:', err);
@@ -106,7 +108,7 @@ deleteTestTemplate(id: string): Observable<void> {
         { id: 'd', text: 'Database' }
       ],
       correctAnswerId: 'a',
-      categoryId: 'AWS Lambda',
+      categoryId: 1,
       difficulty: 'Medium',
       isPremium: false,
       tags: ['serverless', 'compute']
@@ -115,34 +117,47 @@ deleteTestTemplate(id: string): Observable<void> {
   ];
 
   // ── QUESTION BANK METHODS ────────────────────────────────────────
-  getQuestions(): Observable<Question[]> {
-    return of(this.mockQuestions);
+  getQuestions(params?: { categoryIds?: string[]; difficulty?: string; isPremium?: boolean }): Observable<Question[]> {
+    let httpParams = new HttpParams();
+    if (params?.categoryIds?.length) {
+      httpParams = httpParams.set('categoryIds', params.categoryIds.join(','));
+    }
+    if (params?.difficulty) {
+      httpParams = httpParams.set('difficulty', params.difficulty);
+    }
+    if (params?.isPremium !== undefined) {
+      httpParams = httpParams.set('isPremium', params.isPremium.toString());
+    }
+    return this.http.get<Question[]>('/api/questions');
   }
 
-  getQuestionsByCategory(category: string): Observable<Question[]> {
-    return of(this.mockQuestions.filter(q => q.categoryId === category));
-  }
+  
 
   addQuestion(question: Omit<Question, 'id'>): Observable<Question> {
-    const newQ: Question = {
-      ...question,
-      id: 'q-' + Date.now()
-    };
-    this.mockQuestions.push(newQ);
-    return of(newQ);
+    return this.http.post<Question>('/api/questions', question);
   }
 
-  updateQuestion(updated: Question): Observable<Question> {
-    const index = this.mockQuestions.findIndex(q => q.id === updated.id);
-    if (index !== -1) {
-      this.mockQuestions[index] = updated;
-    }
-    return of(updated);
+  updateQuestion(question: Question): Observable<Question> {
+    return this.http.put<Question>(`/api/questions/${question.id}`, question);
   }
 
   deleteQuestion(id: string): Observable<void> {
-    this.mockQuestions = this.mockQuestions.filter(q => q.id !== id);
-    return of(void 0);
+    return this.http.delete<void>(`/api/questions/${id}`);
+  }
+
+  getQuestionsWithCategory(): Observable<Question[]> {
+  return this.getQuestions().pipe(
+      switchMap(questions =>
+        this.getCategories().pipe(
+          map(categories => 
+            questions.map(q => ({
+              ...q,
+              category: categories.find(c => c.id === q.categoryId)?.name
+            }))
+          )
+        )
+      )
+    );
   }
 
   private mockTests: PracticeTest[] = [
@@ -155,7 +170,6 @@ deleteTestTemplate(id: string): Observable<void> {
     durationMinutes: 10,         // ← short for demo
     difficulty: 'Medium',
     tags: ['AWS', 'Cloud', 'Developer'],
-    timeLimitMinutes: 10,
     questions: [
       {
         id: 'q1',
@@ -167,7 +181,7 @@ deleteTestTemplate(id: string): Observable<void> {
           { id: 'd', text: 'RDS' }
         ],
         correctAnswerId: 'b',
-        categoryId: 'AWS Lambda',          // ← ADD THIS
+        categoryId: 1,          // ← ADD THIS
         difficulty: 'Medium',            // ← ADD THIS
         isPremium: false
       },
@@ -181,7 +195,7 @@ deleteTestTemplate(id: string): Observable<void> {
           { id: 'd', text: 'Glacier' }
         ],
         correctAnswerId: 'b',
-        categoryId: 'IAM',
+        categoryId: 1,
         difficulty: 'Easy',
         isPremium: false
       },
@@ -195,7 +209,7 @@ deleteTestTemplate(id: string): Observable<void> {
           { id: 'd', text: 'Step Functions' }
         ],
         correctAnswerId: 'b',
-        categoryId: 'IAM',
+        categoryId: 1,
         difficulty: 'Easy',
         isPremium: false
       }
@@ -211,7 +225,6 @@ deleteTestTemplate(id: string): Observable<void> {
     difficulty: 'Medium',
     tags: ['Cybersecurity', 'CompTIA'],
     // For these tests you can leave questions empty for now
-    timeLimitMinutes: 90,
     questions: []
   },
   {
@@ -223,7 +236,6 @@ deleteTestTemplate(id: string): Observable<void> {
     durationMinutes: 120,
     difficulty: 'Hard',
     tags: ['GCP', 'Cloud Architecture'],
-    timeLimitMinutes: 120,
     questions: []
   },
   {
@@ -235,7 +247,6 @@ deleteTestTemplate(id: string): Observable<void> {
     durationMinutes: 120,
     difficulty: 'Medium',
     tags: ['Azure', 'Microsoft'],
-    timeLimitMinutes: 120,
     questions: []
   },
   {
@@ -247,7 +258,6 @@ deleteTestTemplate(id: string): Observable<void> {
     durationMinutes: 180,
     difficulty: 'Hard',
     tags: ['Kubernetes', 'DevOps'],
-    timeLimitMinutes: 180,
     questions: []
   }
 ];

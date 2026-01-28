@@ -63,6 +63,7 @@
     <mat-chip-listbox>
       @for (catId of templateForm.get('categories')?.value; track catId) {
         <mat-chip>
+          
           {{ getCategoryName(catId) }}  <!-- ← Use the helper method -->
         </mat-chip>
       }
